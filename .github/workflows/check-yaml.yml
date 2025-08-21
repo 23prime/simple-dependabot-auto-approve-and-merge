@@ -1,0 +1,32 @@
+name: Check YAML
+
+on:
+  push:
+    paths:
+      - '*.yml'
+      - '.github/workflows/check-yaml.yml'
+  pull_request:
+    paths:
+      - '*.yml'
+      - '.github/workflows/check-yaml.yml'
+
+jobs:
+  check-yaml:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install Task
+        uses: arduino/setup-task@v2
+
+      - name: Install mise and setup
+        uses: jdx/mise-action@v3
+        with:
+          install: true
+          install_args: "uv yamllint"
+          cache: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check
+        run: task yml:lint

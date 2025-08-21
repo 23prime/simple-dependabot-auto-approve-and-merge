@@ -1,0 +1,69 @@
+version: '3'
+
+tasks:
+  # General tasks
+  setup:
+    desc: "Setup tools"
+    cmds:
+      - mise trust
+      - mise install
+
+  check:
+    desc: "Check"
+    cmds:
+      - task: yml:lint
+      - task: md:check
+      - task: gh:check
+
+  tag:*:
+    desc: "Create a new tag"
+    vars:
+      VERSION: "{{index .MATCH 0}}"
+    cmds:
+      - git tag -a -m "Release v{{.VERSION}}" v{{.VERSION}}
+      - git push --follow-tags
+
+  # YAML tasks
+  yml:lint:
+    desc: "Lint YAMLs"
+    cmds:
+      - task: yml:lint:action
+      - task: yml:lint:self
+      - task: yml:lint:workflows
+
+  yml:lint:action:
+    desc: "Lint action as YAML"
+    cmd: yamllint action.yml
+
+  yml:lint:self:
+    desc: "Lint this file as YAML"
+    cmd: yamllint Taskfile.yml
+
+  yml:lint:workflows:
+    desc: "Lint this file as YAML"
+    cmd: yamllint .github/workflows/*.yml
+
+  # Markdown tasks
+  md:check:
+    desc: "Check Markdown"
+    cmds:
+      - task: md:fix
+      - task: md:lint
+
+  md:fix:
+    desc: "Auto fix Markdown"
+    cmds:
+      - task: md:lint-fix
+
+  md:lint:
+    desc: "Run markdownlint on project markdown files"
+    cmd: markdownlint *.md
+
+  md:lint-fix:
+    desc: "Fix markdownlint issues automatically"
+    cmd: markdownlint *.md --fix
+
+  # GitHub Actions tasks
+  gh:check:
+    desc: "Validate GitHub Actions workflow syntax"
+    cmd: actionlint .github/workflows/*.yml

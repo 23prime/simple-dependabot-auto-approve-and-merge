@@ -1,0 +1,11 @@
+[tools]
+# Markdown
+"npm:markdownlint-cli" = "latest"
+
+# YAML
+uv = "latest"       # for install yamllint
+yamllint = "latest"
+
+# GitHub
+actionlint = "latest"
+shellcheck = "latest" # for actionlint
